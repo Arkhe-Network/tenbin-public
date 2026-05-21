@@ -1,4 +1,5 @@
 use std::net::{IpAddr, Ipv4Addr};
+use std::time::Duration;
 
 use chrono::Utc;
 use reqwest::header::{CONTENT_TYPE, HeaderValue};
@@ -91,7 +92,13 @@ pub struct HiddenRoadClient {
 
 impl HiddenRoadClient {
     pub fn new(client_id: &str, client_secret: &str, base_uri: &str, auth_base_uri: &str) -> Self {
+        // Per-request timeout. Without this, a slow / hung HR endpoint blocks
+        // the caller indefinitely with no log output — that's what caused the
+        // 3.5-minute silent gap in the May-15 incident where all five HR
+        // sync tasks stalled together on a token refresh. A 30s timeout
+        // turns the next such event into loud HTTP errors instead.
         let http = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
             .local_address(IpAddr::V4(Ipv4Addr::UNSPECIFIED))
             .no_proxy()
             .build()
