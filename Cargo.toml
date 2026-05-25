@@ -1,32 +1,31 @@
 [package]
-name = "tenbin-public"
+name = "arkhe-sagemaker-proxy"
 version = "0.1.0"
-edition = "2024"
-license = "Apache-2.0"
-description = "Minimal public-surface crate consumed by Tenbin's public-facing services (e.g. the verification service)."
-repository = "https://github.com/tenbinlabs/tenbin-public"
-readme = "README.md"
+edition = "2021"
 
-# Deliberately small: this crate exists to be a shared dep between Tenbin's
-# internal monorepo and its public-facing services. Anything that doesn't need
-# to cross that boundary stays internal.
-#
-# Versions track the internal monorepo at the time of extraction. Keep aligned.
 [dependencies]
-chrono = { version = "0.4", features = ["serde"] }
-opentelemetry = "=0.30.0"
-opentelemetry-otlp = { version = "0.30.0", features = ["trace", "grpc-tonic"] }
-opentelemetry_sdk = "0.30.0"
-reqwest = { version = "0.13", features = ["json", "query"] }
-rust_decimal = { version = "1.40", features = ["serde-str", "macros", "serde-with-float", "maths"] }
-sentry = { version = "0.38", default-features = false, features = ["backtrace", "contexts", "panic", "tracing", "reqwest", "rustls"], optional = true }
-sentry-tracing = { version = "0.38", optional = true }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_with = { version = "3.17.0", features = ["chrono_0_4"] }
+axum = { version = "0.7", features = ["tokio"] }
+axum-server = { version = "0.7", features = ["tls-rustls"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+aws-sdk-s3 = "1"
+aws-sdk-sagemaker = "1"
+aws-sdk-kms = "1"
+aws-config = "1"
+uuid = { version = "1", features = ["v4"] }
+aes-gcm = "0.10"
+rand = "0.8"
+zeroize = { version = "1", features = ["derive"] }
+x509-parser = "0.16"
+rustls = "0.23"
+rustls-pemfile = "2"
 tracing = "0.1"
-tracing-opentelemetry = "0.31"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-[features]
-sentry = ["dep:sentry", "dep:sentry-tracing"]
+tracing-subscriber = "0.3"
+hyper = "1"
+hyper-util = { version = "0.1", features = ["full"] }
+bytes = "1"
+aws-nitro-enclaves-nsm-api = "0.5.1"
+sha3 = "0.12.0"
+hex = "0.4.3"
+axum-server-mtls = "0.1.2"
