@@ -1,31 +1,18 @@
 [package]
-name = "arkhe-sagemaker-proxy"
+name = "arkhe-os"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { version = "0.7", features = ["tokio"] }
-axum-server = { version = "0.7", features = ["tls-rustls"] }
-tokio = { version = "1", features = ["full"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-aws-sdk-s3 = "1"
-aws-sdk-sagemaker = "1"
-aws-sdk-kms = "1"
-aws-config = "1"
-uuid = { version = "1", features = ["v4"] }
-aes-gcm = "0.10"
-rand = "0.8"
-zeroize = { version = "1", features = ["derive"] }
-x509-parser = "0.16"
-rustls = "0.23"
-rustls-pemfile = "2"
-tracing = "0.1"
-tracing-subscriber = "0.3"
-hyper = "1"
-hyper-util = { version = "0.1", features = ["full"] }
-bytes = "1"
-aws-nitro-enclaves-nsm-api = "0.5.1"
-sha3 = "0.12.0"
+candle-core = "0.8.1"
+candle-nn = "0.8.1"
+sha3 = "0.10.8"
+rand = "0.8.5"
+chrono = "0.4.39"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+log = "0.4"
+env_logger = "0.11"
+url = "2.5"
 hex = "0.4.3"
-axum-server-mtls = "0.1.2"
