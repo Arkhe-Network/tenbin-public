@@ -2,6 +2,7 @@ mod agent;
 mod crypto;
 mod memory;
 mod models;
+mod permaweb;
 mod protocol257;
 mod social;
 mod web;
@@ -43,6 +44,9 @@ struct Args {
 
     #[arg(long)]
     no_proto257: bool,
+
+    #[arg(long)]
+    no_permaweb: bool,
 }
 
 fn main() -> candle_core::Result<()> {
@@ -67,6 +71,7 @@ fn main() -> candle_core::Result<()> {
         google_max_results: 3,
         orkut_enabled: !args.no_orkut,
         protocol257_enabled: !args.no_proto257,
+        permaweb_enabled: !args.no_permaweb,
     };
 
     let mut agent = ArkheAgent::new(config.clone())?;

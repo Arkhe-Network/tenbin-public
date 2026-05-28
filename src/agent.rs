@@ -10,6 +10,7 @@ use candle_nn::VarBuilder;
 use crate::crypto::OctraService;
 use crate::memory::{EncryptedMemoryCommit, EpistemicCommitProtocol, Hyperedge, HypergraphRegistry, MemorySpace, Vertex};
 use crate::models::ArkheWorldModel;
+use crate::permaweb::{PermawebBridge, PermawebConfig};
 use crate::protocol257::Protocol257;
 use crate::social::Orkut20Layer;
 use crate::web::GoogleGroundingLayer;
@@ -32,6 +33,7 @@ pub struct ArkheConfig {
     pub google_max_results: usize,
     pub orkut_enabled: bool,
     pub protocol257_enabled: bool,
+    pub permaweb_enabled: bool,
 }
 
 pub struct ArkheAgent<'a> {
@@ -46,6 +48,7 @@ pub struct ArkheAgent<'a> {
     pub google: Option<GoogleGroundingLayer>,
     pub orkut: Option<Orkut20Layer<'a>>,
     pub protocol257: Option<Protocol257>,
+    pub permaweb: Option<PermawebBridge>,
     pub total_commits: u32,
     pub total_interactions: u32,
     pub total_web_queries: u32,
@@ -103,6 +106,13 @@ impl<'a> ArkheAgent<'a> {
             protocol257 = Some(p257);
         }
 
+        let mut permaweb = None;
+        if config.permaweb_enabled {
+            let pb_config = PermawebConfig::default();
+            let pb = PermawebBridge::new(pb_config);
+            permaweb = Some(pb);
+        }
+
         info!("✅ Arkhe Agent ready — Trinitarian + Google + Orkut + Proto257 active.");
 
         Ok(Self {
@@ -117,6 +127,7 @@ impl<'a> ArkheAgent<'a> {
             google,
             orkut: None, // Will instantiate later when needed
             protocol257,
+            permaweb,
             total_commits: 0,
             total_interactions: 0,
             total_web_queries: 0,
@@ -224,6 +235,11 @@ impl<'a> ArkheAgent<'a> {
         };
         self.hypergraph.add_hyperedge(edge);
 
+        if let Some(pw) = &mut self.permaweb {
+            let pw_result = pw.persist_agent_state(json!(content), &self.agent_id);
+            info!("⛓️  Substrate 927: Memory committed to Arweave (TX: {})", pw_result["tx_id"].as_str().unwrap_or(""));
+        }
+
         self.total_commits += 1;
         info!("💾 Memory commit {}… sealed.", &cid[..12]);
         cid
@@ -245,6 +261,7 @@ impl<'a> ArkheAgent<'a> {
 ║ World-Model: {:>33}
 ║ Protocol 257 session: {:>33}
 ║ Orkut 2.0: {:>33}
+║ Permaweb Bridge: {:>33}
 ╚══════════════════════════════════════════════════════════╝"#,
             self.agent_id,
             self.total_interactions,
@@ -253,7 +270,8 @@ impl<'a> ArkheAgent<'a> {
             self.config.qpow_enabled,
             self.config.maturity,
             proto257_status,
-            if self.config.orkut_enabled { "active" } else { "inactive" }
+            if self.config.orkut_enabled { "active" } else { "inactive" },
+            if self.config.permaweb_enabled { "active" } else { "inactive" }
         )
     }
 }
